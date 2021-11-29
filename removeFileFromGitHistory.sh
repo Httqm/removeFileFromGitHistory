@@ -12,8 +12,10 @@ absolutePathToGitRepoRootDir="$HOME/CDK"
 fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
 
 
+#backupFileToRemove=0
+backupFileToRemove=1
 
-#simulate=0
+#simulate=0		# when not simulating, this script will be reset to its latest committed version
 simulate=1
 
 #verbose=0
@@ -71,6 +73,25 @@ getDirSize() {
 	}
 
 
+# with this script, I may want to :
+#	- completely make a file disappear from the history
+#	- OR remove old versions of a file while still keeping the current version.
+#		- this is why I make a backup
+#		- once the script has run, the 'restored' file is unknown to Git and must be added + committed as an 'initial version'
+makeBackupOfFileToRemove() {
+	local fileToRemove=$1
+	[ "$backupFileToRemove" -eq 1 ] && cp "$fileToRemove" "$tmpBaseDir"
+	}
+
+
+restoreBackupOfFileToRemove() {
+	local fileToRemove=$1
+	[ "$backupFileToRemove" -eq 1 ] && cp "$tmpBaseDir/$(basename "$fileToRemove")" "$fileToRemove"
+	}
+
+
+# '--force' must be passed to 'git filter-repo' to let it work in "real" mode.
+# TODO: hardcode OR pass this parameter without hardcoding (?)
 removeFileFromHistory() {
 	local fileToRemove=$1
 	"$gitFilterRepo" --invert-paths --path "$fileToRemove" 1>"$output" || { echo 'Houston, we have a problem.'; exit 1; }
@@ -105,10 +126,16 @@ main() {
 	initializeVariables
 	cd "$workDir"
 	sizeBefore=$(getDirSize '.')
+
+	makeBackupOfFileToRemove "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
+
 	removeFileFromHistory "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
 	checkFileWasRemoved "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
 	doFinalCleaning
 	sizeAfter=$(getDirSize '.')
+
+	restoreBackupOfFileToRemove  "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
+
 	displayRepoSize "$sizeBefore" "$sizeAfter"
 	}
 
