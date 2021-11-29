@@ -21,6 +21,10 @@ simulate=1
 
 gitFilterRepo="$HOME/apps/git-filter-repo/git-filter-repo"
 
+#tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
+tmpBaseDir='/run/shm/'				# 4GB on Arkan
+
+
 # declared here to make them global
 workDir=''
 output=''
@@ -54,7 +58,7 @@ initializeVariables() {
 
 	# if simulate==1, work on a clone of the repo :
 	[ "$simulate" -ne 0 ] && {
-		workDir=$(mktemp -d -p /run/user/$(id -u) tmp.gitClone.XXXXXXXX)
+		workDir=$(mktemp -d -p "$tmpBaseDir" tmp.gitClone.XXXXXXXX)
 		git clone --no-local "$absolutePathToGitRepoRootDir" "$workDir" || { echo 'Press any key'; read; exit 1; }
 		}
 	}
