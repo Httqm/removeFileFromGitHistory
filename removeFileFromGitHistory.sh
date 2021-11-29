@@ -8,15 +8,16 @@
 absolutePathToGitRepoRootDir="$HOME/CDK"
 #absolutePathToGitRepoRootDir="/run/user/1000/tmp.gitclone"
 
-fileToRemoveFromHistoryRelativeToGitRepoRootDir='things/passwords/p455.kdbx'	# 80MB saved
-#fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
+#fileToRemoveFromHistoryRelativeToGitRepoRootDir='things/passwords/p455.kdbx'	# 80MB saved
+fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
 
 
-#verbose=0
-verbose=1
 
 #simulate=0
 simulate=1
+
+#verbose=0
+verbose=1
 
 
 gitFilterRepo="$HOME/apps/git-filter-repo/git-filter-repo"
