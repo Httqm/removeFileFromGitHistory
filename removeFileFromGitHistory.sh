@@ -8,10 +8,6 @@
 absolutePathToGitRepoRootDir="$HOME/CDK"
 #absolutePathToGitRepoRootDir="/run/user/1000/tmp.gitclone"
 
-#fileToRemoveFromHistoryRelativeToGitRepoRootDir='things/passwords/p455.kdbx'	# 80MB saved
-fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
-
-
 #backupFileToRemove=0
 backupFileToRemove=1
 
@@ -29,6 +25,7 @@ tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
 
 # declared here to make them global
+dataFile=''
 workDir=''
 output=''
 
@@ -54,6 +51,7 @@ checkGitFilterRepoIsAvailable() {
 
 
 initializeVariables() {
+	dataFile=$(basename "$0" '.sh')'.txt'
 	workDir="$absolutePathToGitRepoRootDir"
 
 	output='/dev/null'
@@ -137,16 +135,20 @@ main() {
 	cd "$workDir"
 	sizeBefore=$(getDirSize '.')
 
-	makeBackupOfFileToRemove "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
+#fileToRemoveFromHistoryRelativeToGitRepoRootDir='things/passwords/p455.kdbx'	# 80MB saved
+#fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
 
-	removeFileFromHistory "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
-	checkFileWasRemoved "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
+	while read fileToRemoveFromGitHistory; do
+		[[ "$fileToRemoveFromGitHistory" =~ ^(#|$) ]] && continue
+		echo "working on '$fileToRemoveFromGitHistory'"
+		makeBackupOfFileToRemove "$fileToRemoveFromGitHistory"
+		removeFileFromHistory "$fileToRemoveFromGitHistory"
+		checkFileWasRemoved "$fileToRemoveFromGitHistory"
+		restoreFileToRemove  "$fileToRemoveFromGitHistory"
+	done < "$dataFile"
+
 	doFinalCleaning
-
-	restoreFileToRemove  "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
-
 	sizeAfter=$(getDirSize '.')
-
 	displayRepoSize "$sizeBefore" "$sizeAfter"
 	}
 
