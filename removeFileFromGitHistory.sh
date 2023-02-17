@@ -71,6 +71,19 @@ getDirSize() {
 	}
 
 
+countOccurrencesOfFileToRemove() {
+	local fileToRemove=$1
+	nbOccurrences=$(git log --oneline "$fileToRemove" | wc -l)
+	currentFileSize=$(ls -lh "$fileToRemove" | cut -d' ' -f5)
+	cat <<-EOF
+
+	Working on '$fileToRemoveFromGitHistory' :
+	- occurrences : $nbOccurrences
+	- current size : $currentFileSize
+	EOF
+	}
+
+
 # with this script, I may want to :
 #	- completely make a file disappear from the history
 #	- OR remove old versions of a file while still keeping the current version.
@@ -133,23 +146,23 @@ main() {
 	checkGitFilterRepoIsAvailable
 	initializeVariables
 	cd "$workDir"
-	sizeBefore=$(getDirSize '.')
 
 #fileToRemoveFromHistoryRelativeToGitRepoRootDir='things/passwords/p455.kdbx'	# 80MB saved
 #fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
 
 	while read fileToRemoveFromGitHistory; do
 		[[ "$fileToRemoveFromGitHistory" =~ ^(#|$) ]] && continue
-		echo "working on '$fileToRemoveFromGitHistory'"
+		sizeBefore=$(getDirSize '.')
+		countOccurrencesOfFileToRemove "$fileToRemoveFromGitHistory"
 		makeBackupOfFileToRemove "$fileToRemoveFromGitHistory"
 		removeFileFromHistory "$fileToRemoveFromGitHistory"
 		checkFileWasRemoved "$fileToRemoveFromGitHistory"
 		restoreFileToRemove  "$fileToRemoveFromGitHistory"
+		sizeAfter=$(getDirSize '.')
+		displayRepoSize "$sizeBefore" "$sizeAfter"
 	done < "$dataFile"
 
 	doFinalCleaning
-	sizeAfter=$(getDirSize '.')
-	displayRepoSize "$sizeBefore" "$sizeAfter"
 	}
 
 
