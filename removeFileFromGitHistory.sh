@@ -123,6 +123,9 @@ EOF
 
 
 doFinalCleaning() {
+	# the '--aggressive' directive
+	#	- makes the script WAY slower
+	#	- does not save that much space :-/
 	git gc --prune=now
 	}
 
