@@ -1,12 +1,11 @@
 #!/usr/bin/env bash
 # TODO:
 #	- display 'n MB saved' at the end
+#	- NB: looks like cloning already gets a smaller repository (TBC)
 #	- remove 'shrinkDotGit.sh' (just 'git rm' : I want it to stay in the history)
-#
-# final path (?) : ~/CDK/Doc/static/shell/removeFileFromGitHistory.sh
 
 absolutePathToGitRepoRootDir="$HOME/CDK"
-#absolutePathToGitRepoRootDir="/run/user/1000/tmp.gitclone"
+gitFilterRepo="$HOME/apps/git-filter-repo/git-filter-repo"
 
 #backupFileToRemove=0
 backupFileToRemove=1
@@ -17,12 +16,8 @@ simulate=1
 #verbose=0
 verbose=1
 
-
-gitFilterRepo="$HOME/apps/git-filter-repo/git-filter-repo"
-
 #tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
 tmpBaseDir='/run/shm/'				# 4GB on Arkan
-
 
 # declared here to make them global
 dataFile=''
@@ -32,14 +27,14 @@ output=''
 
 confirmContinueWithoutSimulating() {
 	[ "$simulate" -eq 0 ] && {
-		cat <<EOF
+		cat <<-EOF
 
-	This script is NOT running in simulation mode and WILL CHANGE data.
+			This script is NOT running in simulation mode and WILL CHANGE data.
 
-	Press :
-		- ENTER  to continue
-		- CTRL-c to abort
-EOF
+			Press :
+			- ENTER  to continue
+			- CTRL-c to abort
+		EOF
 		read;
 		}
 	}
@@ -84,11 +79,6 @@ countOccurrencesOfFileToRemove() {
 	}
 
 
-# with this script, I may want to :
-#	- completely make a file disappear from the history
-#	- OR remove old versions of a file while still keeping the current version.
-#		- this is why I make a backup
-#		- once the script has run, the 'restored' file is unknown to Git and must be added + committed as an 'initial version'
 makeBackupOfFileToRemove() {
 	local fileToRemove=$1
 	[ "$backupFileToRemove" -eq 1 ] && cp "$fileToRemove" "$tmpBaseDir"
@@ -108,7 +98,6 @@ restoreFileToRemove() {
 	}
 
 
-# '--force' must be passed to 'git filter-repo' to let it work in "real" mode.
 # TODO: hardcode OR pass this parameter without hardcoding (?)
 removeFileFromHistory() {
 	local fileToRemove=$1
@@ -126,10 +115,10 @@ checkFileWasRemoved() {
 displayRepoSize() {
 	local sizeBefore=$1
 	local sizeAfter=$2
-	cat << EOF
-SIZE BEFORE :	$sizeBefore
-SIZE AFTER  :	$sizeAfter
-EOF
+	cat <<-EOF
+	SIZE BEFORE :	$sizeBefore
+	SIZE AFTER  :	$sizeAfter
+	EOF
 	}
 
 
@@ -137,6 +126,7 @@ doFinalCleaning() {
 	# the '--aggressive' directive
 	#	- makes the script WAY slower
 	#	- does not save that much space :-/
+	# TODO: correct way to do this : https://stackoverflow.com/questions/5613345/how-to-shrink-the-git-folder/8483112#8483112
 	git gc --prune=now
 	}
 
@@ -147,9 +137,6 @@ main() {
 	initializeVariables
 	cd "$workDir"
 
-#fileToRemoveFromHistoryRelativeToGitRepoRootDir='things/passwords/p455.kdbx'	# 80MB saved
-#fileToRemoveFromHistoryRelativeToGitRepoRootDir='Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf'	# 9MB saved
-
 	while read fileToRemoveFromGitHistory; do
 		[[ "$fileToRemoveFromGitHistory" =~ ^(#|$) ]] && continue
 		sizeBefore=$(getDirSize '.')
@@ -157,13 +144,12 @@ main() {
 		makeBackupOfFileToRemove "$fileToRemoveFromGitHistory"
 		removeFileFromHistory "$fileToRemoveFromGitHistory"
 		checkFileWasRemoved "$fileToRemoveFromGitHistory"
-		restoreFileToRemove  "$fileToRemoveFromGitHistory"
+		restoreFileToRemove "$fileToRemoveFromGitHistory"
 		sizeAfter=$(getDirSize '.')
 		displayRepoSize "$sizeBefore" "$sizeAfter"
 	done < "$dataFile"
 
 	doFinalCleaning
 	}
-
 
 main
