@@ -84,9 +84,16 @@ makeBackupOfFileToRemove() {
 	}
 
 
-restoreBackupOfFileToRemove() {
+restoreFileToRemove() {
 	local fileToRemove=$1
-	[ "$backupFileToRemove" -eq 1 ] && cp "$tmpBaseDir/$(basename "$fileToRemove")" "$fileToRemove"
+
+	# Git dislikes empty directories and may have deleted the one storing "$fileToRemove"
+	# if this file was the only one in there
+	mkdir -p "$(dirname ${fileToRemove})"
+
+	[ "$backupFileToRemove" -eq 1 ] && mv "$tmpBaseDir/$(basename "$fileToRemove")" "$fileToRemove"
+	git add "$fileToRemove"
+	git commit -m "initial version after wiping history"
 	}
 
 
@@ -134,7 +141,7 @@ main() {
 	doFinalCleaning
 	sizeAfter=$(getDirSize '.')
 
-	restoreBackupOfFileToRemove  "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
+	restoreFileToRemove  "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
 
 	displayRepoSize "$sizeBefore" "$sizeAfter"
 	}
