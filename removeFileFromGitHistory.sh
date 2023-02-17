@@ -139,9 +139,10 @@ main() {
 	removeFileFromHistory "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
 	checkFileWasRemoved "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
 	doFinalCleaning
-	sizeAfter=$(getDirSize '.')
 
 	restoreFileToRemove  "$fileToRemoveFromHistoryRelativeToGitRepoRootDir"
+
+	sizeAfter=$(getDirSize '.')
 
 	displayRepoSize "$sizeBefore" "$sizeAfter"
 	}
