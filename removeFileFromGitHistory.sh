@@ -4,7 +4,6 @@
 #	- NB: looks like cloning already gets a smaller repository (TBC)
 
 absolutePathToGitRepoRootDir="$HOME/CDK"
-gitFilterRepo="$HOME/apps/git-filter-repo/git-filter-repo"
 
 #backupFileToRemove=0
 backupFileToRemove=1
@@ -50,7 +49,18 @@ confirmContinueWithoutSimulating() {
 
 
 checkGitFilterRepoIsAvailable() {
-	"$gitFilterRepo" --version &>/dev/null || { echo "Looks like 'git filter-repo' is not installed."; exit 1; }
+	git filter-repo --version &>/dev/null || {
+		cat <<-EOMESSAGE
+		Looks like 'git filter-repo' is not installed.
+
+		For details, please visit https://github.com/newren/git-filter-repo#how-do-i-install-it
+
+		For the impatients, this does the job:
+		    sudo apt install git-filter-repo
+
+		EOMESSAGE
+		exit 1
+		}
 	}
 
 
@@ -108,7 +118,7 @@ restoreFileToRemove() {
 # TODO: hardcode OR pass this parameter without hardcoding (?)
 removeFileFromHistory() {
 	local fileToRemove=$1
-	"$gitFilterRepo" --invert-paths --path "$fileToRemove" 1>"$output" || { echo 'Houston, we have a problem.'; exit 1; }
+	git filter-repo --invert-paths --path "$fileToRemove" 1>"$output" || { echo 'Houston, we have a problem.'; exit 1; }
 	}
 
 
