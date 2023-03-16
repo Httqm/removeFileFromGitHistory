@@ -114,7 +114,6 @@ restoreFileToRemove() {
 	}
 
 
-# TODO: hardcode OR pass this parameter without hardcoding (?)
 removeFileFromHistory() {
 	local fileToRemove=$1
 	git filter-repo --invert-paths --path "$fileToRemove" 1>"$output" || { echo 'Houston, we have a problem.'; exit 1; }
