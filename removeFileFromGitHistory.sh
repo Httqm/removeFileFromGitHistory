@@ -19,12 +19,16 @@ verbose=1
 #tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
 tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
+
 # declared here to make them global
-dataFile=''	# list of files to remove from the Git history
-			# 1 filename per line
-			# paths are relative to the root of the repository base directory : "$absolutePathToGitRepoRootDir"
-			# lines starting with '#' are comments and are ignored
-			# expected file name : "<nameOfThisScript>.txt"
+
+dataFile=$(basename "$0" '.sh')'.txt'
+# list of files to remove from the Git history
+#	1 filename per line
+#	paths are relative to the root of the repository base directory : "$absolutePathToGitRepoRootDir"
+#	lines starting with '#' are comments and are ignored
+# expected file name : "<nameOfThisScript>.txt"
+
 workDir=''
 output=''
 
@@ -50,13 +54,11 @@ checkGitFilterRepoIsAvailable() {
 
 
 initializeVariables() {
-	dataFile=$(basename "$0" '.sh')'.txt'
-	workDir="$absolutePathToGitRepoRootDir"
-
 	output='/dev/null'
 	[ "$verbose" == '1' ] && output='/dev/stdout'
 
-	# if simulate==1, work on a clone of the repo :
+	# if simulate==1, work on a clone of the repo
+	workDir="$absolutePathToGitRepoRootDir"
 	[ "$simulate" -ne 0 ] && {
 		workDir=$(mktemp -d -p "$tmpBaseDir" tmp.gitClone.XXXXXXXX)
 		git clone --no-local "$absolutePathToGitRepoRootDir" "$workDir" || { echo 'Press any key'; read; exit 1; }
