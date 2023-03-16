@@ -1,7 +1,4 @@
 #!/usr/bin/env bash
-# TODO:
-#	- display 'n MB saved' at the end
-#	- NB: looks like cloning already gets a smaller repository (TBC)
 
 absolutePathToGitRepoRootDir="$HOME/CDK"
 
@@ -127,12 +124,24 @@ checkFileWasRemoved() {
 	}
 
 
+removeUnitPrefixLetter() {
+	local numberWithUnitPrefixLetter=$1
+	echo ${numberWithUnitPrefixLetter%[kmgtKMGT]}
+	}
+
+
 displayRepoSize() {
-	local sizeBefore=$1
-	local sizeAfter=$2
+	local message=$1
+	local sizeBefore=$2
+	local sizeAfter=$3
+
+	sizeBefore_noUnit=$(removeUnitPrefixLetter "$sizeBefore")
+	sizeAfter_noUnit=$(removeUnitPrefixLetter "$sizeAfter")
+
 	cat <<-EOF
-	SIZE BEFORE :	$sizeBefore
-	SIZE AFTER  :	$sizeAfter
+	SIZE BEFORE ($message) :	$sizeBefore
+	SIZE AFTER  ($message) :	$sizeAfter
+	DIFFERENCE : $((sizeBefore_noUnit-sizeAfter_noUnit))
 	EOF
 	}
 
@@ -151,20 +160,23 @@ main() {
 	checkGitFilterRepoIsAvailable
 	initializeVariables
 	cd "$workDir"
+	sizeBeforeRemovingAllListedFiles=$(getDirSize '.')
 
 	while read fileToRemoveFromGitHistory; do
 		[[ "$fileToRemoveFromGitHistory" =~ ^(#|$) ]] && continue
-		sizeBefore=$(getDirSize '.')
+		sizeBeforeRemovingThisFile=$(getDirSize '.')
 		countOccurrencesOfFileToRemove "$fileToRemoveFromGitHistory"
 		makeBackupOfFileToRemove "$fileToRemoveFromGitHistory"
 		removeFileFromHistory "$fileToRemoveFromGitHistory"
 		checkFileWasRemoved "$fileToRemoveFromGitHistory"
 		restoreFileToRemove "$fileToRemoveFromGitHistory"
-		sizeAfter=$(getDirSize '.')
-		displayRepoSize "$sizeBefore" "$sizeAfter"
+		sizeAfterRemovingThisFile=$(getDirSize '.')
+		displayRepoSize 'removed 1 file' "$sizeBeforeRemovingThisFile" "$sizeAfterRemovingThisFile"
 	done < "$dataFile"
 
 	doFinalCleaning
+	sizeAfterRemovingAllListedFiles=$(getDirSize '.')
+	displayRepoSize 'removed all listed files' "$sizeBeforeRemovingAllListedFiles" "$sizeAfterRemovingAllListedFiles"
 	}
 
 main
