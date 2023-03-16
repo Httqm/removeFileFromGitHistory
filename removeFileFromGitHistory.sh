@@ -29,7 +29,7 @@ tmpBaseDir='/run/shm/'				# 4GB on Arkan
 # we 'cd' into a temporary directory and can't refer to this file with a relative path
 dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
 
-workDir=''
+workDir="$absolutePathToGitRepoRootDir"
 output=''
 
 
@@ -69,7 +69,6 @@ initializeVariables() {
 	[ "$verbose" == '1' ] && output='/dev/stdout'
 
 	# if simulate==1, work on a clone of the repo
-	workDir="$absolutePathToGitRepoRootDir"
 	[ "$simulate" -ne 0 ] && {
 		workDir=$(mktemp -d -p "$tmpBaseDir" tmp.gitClone.XXXXXXXX)
 		git clone --no-local "$absolutePathToGitRepoRootDir" "$workDir" || { echo 'Press any key'; read; exit 1; }
