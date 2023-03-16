@@ -2,7 +2,6 @@
 # TODO:
 #	- display 'n MB saved' at the end
 #	- NB: looks like cloning already gets a smaller repository (TBC)
-#	- remove 'shrinkDotGit.sh' (just 'git rm' : I want it to stay in the history)
 
 absolutePathToGitRepoRootDir="$HOME/CDK"
 gitFilterRepo="$HOME/apps/git-filter-repo/git-filter-repo"
