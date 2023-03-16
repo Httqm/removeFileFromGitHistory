@@ -21,12 +21,14 @@ tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
 # declared here to make them global
 
-dataFile=$(basename "$0" '.sh')'.txt'
 # list of files to remove from the Git history
-#	1 filename per line
-#	paths are relative to the root of the repository base directory : "$absolutePathToGitRepoRootDir"
-#	lines starting with '#' are comments and are ignored
+#	- 1 filename per line
+#	- paths are relative to the root of the repository : "$absolutePathToGitRepoRootDir"
+#	- lines starting with '#' are comments and are ignored
 # expected file name : "<nameOfThisScript>.txt"
+# Retrieving the absolute path of this file is made necessary by the "simulate" mode where
+# we 'cd' into a temporary directory and can't refer to this file with a relative path
+dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
 
 workDir=''
 output=''
