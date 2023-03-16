@@ -37,11 +37,11 @@ confirmContinueWithoutSimulating() {
 	[ "$simulate" -eq 0 ] && {
 		cat <<-EOF
 
-			This script is NOT running in simulation mode and WILL CHANGE data.
+		This script is NOT running in simulation mode and WILL CHANGE data.
 
-			Press :
-			- ENTER  to continue
-			- CTRL-c to abort
+		Press :
+		- CTRL-c to abort
+		- ENTER  to continue
 		EOF
 		read;
 		}
