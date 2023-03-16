@@ -20,7 +20,11 @@ verbose=1
 tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
 # declared here to make them global
-dataFile=''
+dataFile=''	# list of files to remove from the Git history
+			# 1 filename per line
+			# paths are relative to the root of the repository base directory : "$absolutePathToGitRepoRootDir"
+			# lines starting with '#' are comments and are ignored
+			# expected file name : "<nameOfThisScript>.txt"
 workDir=''
 output=''
 
