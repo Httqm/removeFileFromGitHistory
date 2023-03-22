@@ -35,10 +35,6 @@ workDir="$absolutePathToGitRepoRootDir"
 output=''
 
 
-
-
-
-
 error() {
 	echo "ERROR: $1"
 	}
@@ -46,7 +42,7 @@ error() {
 
 # TODO: specify file on the CLI or list of files in .txt file
 usage() {
-	cat <<-EOF
+	cat <<-EOUSAGE
 
 	$0: Remove the specified file(s) from the Git history
 
@@ -97,14 +93,14 @@ getAbsoluteGitRepoDir() {
 
 confirmContinueWithoutSimulating() {
 	[ "$simulate" -eq 0 ] && {
-		cat <<-EOF
+		cat <<-EOCONFIRM
 
 		This script is NOT running in simulation mode and WILL CHANGE data.
 
 		Press :
 		- CTRL-c to abort
 		- ENTER  to continue
-		EOF
+		EOCONFIRM
 		read;
 		}
 	}
@@ -112,7 +108,7 @@ confirmContinueWithoutSimulating() {
 
 checkGitFilterRepoIsAvailable() {
 	git filter-repo --version &>/dev/null || {
-		cat <<-EOMESSAGE
+		cat <<-EOCHECK
 		Looks like 'git filter-repo' is not installed.
 
 		For details, please visit https://github.com/newren/git-filter-repo#how-do-i-install-it
@@ -120,7 +116,7 @@ checkGitFilterRepoIsAvailable() {
 		For the impatients, this does the job:
 		    sudo apt install git-filter-repo
 
-		EOMESSAGE
+		EOCHECK
 		exit 1
 		}
 	}
@@ -148,12 +144,12 @@ countOccurrencesOfFileToRemove() {
 	local fileToRemove=$1
 	nbOccurrences=$(git log --oneline "$fileToRemove" | wc -l)
 	currentFileSize=$(ls -lh "$fileToRemove" | cut -d' ' -f5)
-	cat <<-EOF
+	cat <<-EOWORKING
 
 	Working on '$fileToRemoveFromGitHistory' :
 	- occurrences : $nbOccurrences
 	- current size : $currentFileSize
-	EOF
+	EOWORKING
 	}
 
 
@@ -203,11 +199,11 @@ displayRepoSize() {
 	sizeBefore_noUnit=$(removeUnitPrefixLetter "$sizeBefore")
 	sizeAfter_noUnit=$(removeUnitPrefixLetter "$sizeAfter")
 
-	cat <<-EOF
+	cat <<-EOSIZE
 	SIZE BEFORE ($message) :	$sizeBefore
 	SIZE AFTER  ($message) :	$sizeAfter
 	DIFFERENCE : $((sizeBefore_noUnit-sizeAfter_noUnit))
-	EOF
+	EOSIZE
 	}
 
 
@@ -246,5 +242,6 @@ main() {
 	sizeAfterRemovingAllListedFiles=$(getDirSize '.')
 	displayRepoSize 'removed all listed files' "$sizeBeforeRemovingAllListedFiles" "$sizeAfterRemovingAllListedFiles"
 	}
+
 
 main "$@"
