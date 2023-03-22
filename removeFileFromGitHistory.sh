@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 
-absolutePathToGitRepoRootDir="$HOME/CDK"
+set -u
+set -o pipefail
+
+
+gitRepoDir=''
+absolutePathToGitRepoRootDir=''
 
 #backupFileToRemove=0
 backupFileToRemove=1
@@ -28,6 +33,66 @@ dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
 
 workDir="$absolutePathToGitRepoRootDir"
 output=''
+
+
+
+
+
+
+error() {
+	echo "ERROR: $1"
+	}
+
+
+# TODO: specify file on the CLI or list of files in .txt file
+usage() {
+	cat <<-EOF
+
+	$0: Remove the specified file(s) from the Git history
+
+	USAGE:
+	    $0 [OPTIONS]
+
+	options:
+	  -g, --git-repo-dir      Root directory of the Git repository
+	  -h, --help              Display this help message and exit
+	EOUSAGE
+	}
+
+
+getCliParameters() {
+	while [ "$#" -gt 0 ]; do
+		case "$1" in
+			-g | --git-repo-dir)
+				shift
+				gitRepoDir="$1"
+				shift
+				;;
+			-h | --help)
+				usage
+				exit 0
+				;;
+			-*)
+				error "Unknown option: '$1'"
+				usage
+				exit 1
+				;;
+		esac
+	done
+	}
+
+
+checkCliParameters() {
+	[ -d "$gitRepoDir" ] || { error "Directory '$gitRepoDir' not found"; exit 1; }
+	}
+
+
+getAbsoluteGitRepoDir() {
+	absolutePathToGitRepoRootDir=$(readlink -f "$gitRepoDir")
+
+	# check this is a Git repo dir
+	[ -d "$absolutePathToGitRepoRootDir/.git" ] || { error "No '$absolutePathToGitRepoRootDir/.git' directory found, '$absolutePathToGitRepoRootDir' is not the root directory of a Git repository"; exit 1; }
+	}
 
 
 confirmContinueWithoutSimulating() {
@@ -156,6 +221,9 @@ doFinalCleaning() {
 
 
 main() {
+	getCliParameters "$@"
+	checkCliParameters
+	getAbsoluteGitRepoDir
 	confirmContinueWithoutSimulating
 	checkGitFilterRepoIsAvailable
 	initializeVariables
@@ -179,4 +247,4 @@ main() {
 	displayRepoSize 'removed all listed files' "$sizeBeforeRemovingAllListedFiles" "$sizeAfterRemovingAllListedFiles"
 	}
 
-main
+main "$@"
