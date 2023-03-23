@@ -3,9 +3,11 @@
 set -u
 set -o pipefail
 
-
+# initial/default values of CLI parameters
 gitRepoDir=''
 absolutePathToGitRepoRootDir=''
+verbose=1
+
 
 #backupFileToRemove=0
 backupFileToRemove=1
@@ -13,8 +15,6 @@ backupFileToRemove=1
 #simulate=0		# when not simulating, this script will be reset to its latest committed version
 simulate=1
 
-#verbose=0
-verbose=1
 
 #tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
 tmpBaseDir='/run/shm/'				# 4GB on Arkan
@@ -52,7 +52,15 @@ usage() {
 	options:
 	  -g, --git-repo-dir      Root directory of the Git repository
 	  -h, --help              Display this help message and exit
+	  -v, --verbose           Verbose mode, either 0 or 1 (default: 1)
 	EOUSAGE
+	}
+
+
+warnEmptyValue() {
+	local currentFlag=$1
+	local value=$2
+	[ -z "$value" ] && { error "No value given for '$currentFlag'"; exit 1; }
 	}
 
 
@@ -68,6 +76,12 @@ getCliParameters() {
 				usage
 				exit 0
 				;;
+			-v | --verbose)
+				shift
+				warnEmptyValue '-v' "$1"
+				verbose="$1"
+				shift
+				;;
 			-*)
 				error "Unknown option: '$1'"
 				usage
@@ -80,6 +94,8 @@ getCliParameters() {
 
 checkCliParameters() {
 	[ -d "$gitRepoDir" ] || { error "Directory '$gitRepoDir' not found"; exit 1; }
+
+	[ "$verbose" -ne 0 -a "$verbose" -ne 1 ] && { error "'verbose' expects only 0 or 1"; exit 1; }
 	}
 
 
