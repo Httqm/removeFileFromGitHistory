@@ -3,7 +3,7 @@
 set -u
 set -o pipefail
 
-# initial/default values of CLI parameters
+# initial and default values of CLI parameters
 gitRepoDir='./'
 absolutePathToGitRepoRootDir=''
 verbose=1
@@ -50,9 +50,9 @@ usage() {
 	    $0 [OPTIONS]
 
 	options:
-	  -g, --git-repo-dir      Root directory of the Git repository
-	  -h, --help              Display this help message and exit
-	  -v, --verbose           Verbose mode, either 0 or 1 (default: 1)
+	  -g <dir>, --git-repo-dir <dir>      Root directory of the Git repository
+	  -h, --help                          Display this help message and exit
+	  -v <0|1>, --verbose <0|1>           Verbose mode (default: 1)
 	EOUSAGE
 	}
 
@@ -85,7 +85,7 @@ getCliParameters() {
 
 
 checkCliParameters() {
-	[ -d "$gitRepoDir" ] || { error "Directory '$gitRepoDir' not found"; exit 1; }
+	[ -d "$gitRepoDir" ] || { error "Directory '$gitRepoDir' not found"; usage; exit 1; }
 
 	[ "$verbose" -ne 0 -a "$verbose" -ne 1 ] && { error "'verbose' expects only 0 or 1"; exit 1; }
 	}
