@@ -272,9 +272,13 @@ main() {
 	initializeVariables
 	cd "$workDir"
 	sizeBeforeRemovingAllListedFiles=$(getDirSize '.')
+	while read dataLine; do
 
-	while read fileToRemoveFromGitHistory; do
-		[[ "$fileToRemoveFromGitHistory" =~ ^(#|$) ]] && continue
+		[[ "$dataLine" =~ ^(#|$) ]] && continue
+		continue=0
+		getCleanDataLineValues "$dataLine"
+		[ "$continue" -eq 1 ] && continue
+
 		sizeBeforeRemovingThisFile=$(getDirSize '.')
 		countOccurrencesOfFileToRemove "$fileToRemoveFromGitHistory"
 		makeBackupOfFileToRemove "$fileToRemoveFromGitHistory"
@@ -283,13 +287,6 @@ main() {
 		restoreFileToRemove "$fileToRemoveFromGitHistory"
 		sizeAfterRemovingThisFile=$(getDirSize '.')
 		displayRepoSize 'removed 1 file' "$sizeBeforeRemovingThisFile" "$sizeAfterRemovingThisFile"
-	while read dataLine; do
-
-		[[ "$dataLine" =~ ^(#|$) ]] && continue
-		continue=0
-		getCleanDataLineValues "$dataLine"
-		[ "$continue" -eq 1 ] && continue
-
 	done < "$dataFile"
 
 	doFinalCleaning
