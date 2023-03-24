@@ -49,6 +49,11 @@ error() {
 	}
 
 
+info() {
+	echo "INFO: $1"
+	}
+
+
 # TODO: specify file on the CLI or list of files in .txt file
 usage() {
 	cat <<-EOUSAGE
@@ -253,7 +258,7 @@ getCleanDataLineValues() {
 	fileToRemoveFromGitHistory=$(getFieldFromDataLine 1 "$dataLine")
 	keepLatestVersion=$(getFieldFromDataLine 2 "$dataLine")
 
-	[ -f "$fileToRemoveFromGitHistory" ] || { error "File '$fileToRemoveFromGitHistory' not found"; exit 1; }
+	[ -f "$fileToRemoveFromGitHistory" ] || { info "File '$fileToRemoveFromGitHistory' not found, skipping"; continue=1; }
 	[ "$keepLatestVersion" != '0' -a "$keepLatestVersion" != '1' ] && { error "'keepLatestVersion' must be either 0 or 1 for file '$fileToRemoveFromGitHistory'"; exit 1; }
 	}
 
@@ -281,7 +286,9 @@ main() {
 	while read dataLine; do
 
 		[[ "$dataLine" =~ ^(#|$) ]] && continue
+		continue=0
 		getCleanDataLineValues "$dataLine"
+		[ "$continue" -eq 1 ] && continue
 
 	done < "$dataFile"
 
