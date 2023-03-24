@@ -4,7 +4,7 @@ set -u
 set -o pipefail
 
 # initial/default values of CLI parameters
-gitRepoDir=''
+gitRepoDir='./'
 absolutePathToGitRepoRootDir=''
 verbose=1
 
@@ -60,7 +60,11 @@ usage() {
 warnEmptyValue() {
 	local currentFlag=$1
 	local value=$2
-	[ -z "$value" ] && { error "No value given for '$currentFlag'"; exit 1; }
+	[ -z "$value" ] && {
+		error "No value given for '$currentFlag'"
+		usage
+		exit 1
+		}
 	}
 
 
@@ -68,11 +72,11 @@ getCliParameters() {
 	while [ "$#" -gt 0 ]; do
 		case "$1" in
 			-g | --git-repo-dir)
-				shift; gitRepoDir="$1"; shift ;;
+				shift; gitRepoDir="${1:-}"; warnEmptyValue '-g' "$gitRepoDir"; shift ;;
 			-h | --help)
 				usage; exit 0 ;;
 			-v | --verbose)
-				shift; warnEmptyValue '-v' "$1"; verbose="$1"; shift ;;
+				shift; verbose="${1:-}"; warnEmptyValue '-v' "$verbose"; shift ;;
 			-*)
 				error "Unknown option: '$1'"; usage; exit 1 ;;
 		esac
