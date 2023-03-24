@@ -191,7 +191,7 @@ restoreFileToRemove() {
 
 	[ "$backupFileToRemove" -eq 1 ] && mv "$tmpBaseDir/$(basename "$fileToRemove")" "$fileToRemove"
 	git add "$fileToRemove"
-	git commit -m "initial version after wiping history"
+	git commit -m "new 'initial' version after wiping file history"
 	}
 
 
