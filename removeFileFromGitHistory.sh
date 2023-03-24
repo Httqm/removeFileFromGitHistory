@@ -68,25 +68,13 @@ getCliParameters() {
 	while [ "$#" -gt 0 ]; do
 		case "$1" in
 			-g | --git-repo-dir)
-				shift
-				gitRepoDir="$1"
-				shift
-				;;
+				shift; gitRepoDir="$1"; shift ;;
 			-h | --help)
-				usage
-				exit 0
-				;;
+				usage; exit 0 ;;
 			-v | --verbose)
-				shift
-				warnEmptyValue '-v' "$1"
-				verbose="$1"
-				shift
-				;;
+				shift; warnEmptyValue '-v' "$1"; verbose="$1"; shift ;;
 			-*)
-				error "Unknown option: '$1'"
-				usage
-				exit 1
-				;;
+				error "Unknown option: '$1'"; usage; exit 1 ;;
 		esac
 	done
 	}
