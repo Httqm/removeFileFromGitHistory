@@ -87,9 +87,14 @@ getCliParameters() {
 
 
 checkCliParameters() {
-	[ -d "$gitRepoDir" ] || { error "Directory '$gitRepoDir' not found"; usage; exit 1; }
+	local errorFound=0
+	[ -d "$gitRepoDir" ] || { error "Directory '$gitRepoDir' not found"; errorFound=1; }
 
-	[ "$verbose" -ne 0 -a "$verbose" -ne 1 ] && { error "'verbose' expects only 0 or 1"; exit 1; }
+	[ "$verbose" -ne 0 -a "$verbose" -ne 1 ] && { error "'verbose' must be either 0 or 1"; errorFound=1; }
+
+	[ "$simulate" -ne 0 -a "$simulate" -ne 1 ] && { error "'simulate' must be either 0 or 1"; errorFound=1; }
+
+	[ "$errorFound" -eq 1 ] && { usage; exit 1; }
 	}
 
 
