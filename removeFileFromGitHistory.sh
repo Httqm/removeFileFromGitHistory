@@ -9,6 +9,9 @@ absolutePathToGitRepoRootDir=''
 verbose=1
 simulate=1
 
+# global variables
+fileToRemoveFromGitHistory=''
+keepLatestVersion=''
 
 #backupFileToRemove=0
 backupFileToRemove=1
@@ -19,7 +22,6 @@ backupFileToRemove=1
 tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
 
-# declared here to make them global
 
 # list of files + parameters
 # format :
@@ -246,6 +248,16 @@ getFieldFromDataLine() {
 	}
 
 
+getCleanDataLineValues() {
+	local dataLine="$1"
+	fileToRemoveFromGitHistory=$(getFieldFromDataLine 1 "$dataLine")
+	keepLatestVersion=$(getFieldFromDataLine 2 "$dataLine")
+
+	[ -f "$fileToRemoveFromGitHistory" ] || { error "File '$fileToRemoveFromGitHistory' not found"; exit 1; }
+	[ "$keepLatestVersion" != '0' -a "$keepLatestVersion" != '1' ] && { error "'keepLatestVersion' must be either 0 or 1 for file '$fileToRemoveFromGitHistory'"; exit 1; }
+	}
+
+
 main() {
 	getCliParameters "$@"
 	checkCliParameters
@@ -269,11 +281,7 @@ main() {
 	while read dataLine; do
 
 		[[ "$dataLine" =~ ^(#|$) ]] && continue
-		fileToRemoveFromGitHistory=$(getFieldFromDataLine 1 "$dataLine")
-		keepLatestVersion=$(getFieldFromDataLine 2 "$dataLine")
-		echo "file: '$fileToRemoveFromGitHistory', keep latest version : '$keepLatestVersion'"
-		[ -f "$fileToRemoveFromGitHistory" ] || { error "File '$fileToRemoveFromGitHistory' not found"; exit 1; }
-		[ "$keepLatestVersion" != '0' -a "$keepLatestVersion" != '1' ] && { error "'keepLatestVersion' must be either 0 or 1 for file '$fileToRemoveFromGitHistory'"; exit 1; }
+		getCleanDataLineValues "$dataLine"
 
 	done < "$dataFile"
 
