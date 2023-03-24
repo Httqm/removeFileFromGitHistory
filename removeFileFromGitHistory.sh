@@ -45,12 +45,12 @@ output=''
 
 
 error() {
-	echo "ERROR: $1"
+	echo -e "\033[1;31mERROR\033[0m: $1"
 	}
 
 
 info() {
-	echo "INFO: $1"
+	echo -e "\033[1;36mINFO\033[0m: $1"
 	}
 
 
