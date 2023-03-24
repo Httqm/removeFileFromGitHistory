@@ -13,8 +13,12 @@ simulate=1
 fileToRemoveFromGitHistory=''
 keepLatestVersion=''
 
-#backupFileToRemove=0
-backupFileToRemove=1
+
+# TODO: wrong option name
+# making a backup is mandatory if we want to reset the file history (i.e. keep only the last version of the file)
+# no need to backup if we want to completely wipe 'fileToRemove' from the repository. no need to commit it back either
+backupFileToRemove=0
+#backupFileToRemove=1
 
 
 
