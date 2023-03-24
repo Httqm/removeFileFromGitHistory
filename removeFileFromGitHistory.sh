@@ -21,11 +21,19 @@ tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
 # declared here to make them global
 
-# list of files to remove from the Git history
-#	- 1 filename per line
-#	- paths are relative to the root of the repository : "$absolutePathToGitRepoRootDir"
+# list of files + parameters
+# format :
+#	<filename>;<keepLatestVersion>
+#	- <filename> :
+#		- path of the file to remove from Git
+#		- relative to the root of the repository "$absolutePathToGitRepoRootDir"
+#	- <keepLatestVersion> :
+#		- 0 : completely wipe <filename> from the repository
+#		- 1 : delete history of <filename> + commit its latest version back
+#			  into the repository as a "new initial version"
 #	- lines starting with '#' are comments and are ignored
-# expected file name : "<nameOfThisScript>.txt"
+#
+# expected <dataFile> file name : "<nameOfThisScript>.txt"
 # Retrieving the absolute path of this file is made necessary by the "simulate" mode where
 # we 'cd' into a temporary directory and can't refer to this file with a relative path
 dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
@@ -231,6 +239,13 @@ doFinalCleaning() {
 	}
 
 
+getFieldFromDataLine() {
+	local fieldNb="$1"
+	local dataLine="$2"
+	echo "$dataLine" | cut -d ';' -f "$fieldNb"
+	}
+
+
 main() {
 	getCliParameters "$@"
 	checkCliParameters
@@ -251,6 +266,15 @@ main() {
 		restoreFileToRemove "$fileToRemoveFromGitHistory"
 		sizeAfterRemovingThisFile=$(getDirSize '.')
 		displayRepoSize 'removed 1 file' "$sizeBeforeRemovingThisFile" "$sizeAfterRemovingThisFile"
+	while read dataLine; do
+
+		[[ "$dataLine" =~ ^(#|$) ]] && continue
+		fileToRemoveFromGitHistory=$(getFieldFromDataLine 1 "$dataLine")
+		keepLatestVersion=$(getFieldFromDataLine 2 "$dataLine")
+		echo "file: '$fileToRemoveFromGitHistory', keep latest version : '$keepLatestVersion'"
+		[ -f "$fileToRemoveFromGitHistory" ] || { error "File '$fileToRemoveFromGitHistory' not found"; exit 1; }
+		[ "$keepLatestVersion" != '0' -a "$keepLatestVersion" != '1' ] && { error "'keepLatestVersion' must be either 0 or 1 for file '$fileToRemoveFromGitHistory'"; exit 1; }
+
 	done < "$dataFile"
 
 	doFinalCleaning

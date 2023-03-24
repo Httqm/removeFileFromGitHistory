@@ -1,4 +1,4 @@
-# paths are relative to the root of the repository base directory : "$absolutePathToGitRepoRootDir"
-things/passwords/p455.kdbx
-Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf
-Doc/static/webArticles/Ansible pour les initiés.pdf
+toto;1
+things/passwords/p455.kdbx;1
+#Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf;1
+#Doc/static/webArticles/Ansible pour les initiés.pdf;1
