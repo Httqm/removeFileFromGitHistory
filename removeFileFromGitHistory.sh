@@ -7,13 +7,12 @@ set -o pipefail
 gitRepoDir='./'
 absolutePathToGitRepoRootDir=''
 verbose=1
+simulate=1
 
 
 #backupFileToRemove=0
 backupFileToRemove=1
 
-#simulate=0		# when not simulating, this script will be reset to its latest committed version
-simulate=1
 
 
 #tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
@@ -52,6 +51,7 @@ usage() {
 	options:
 	  -g <dir>, --git-repo-dir <dir>      Root directory of the Git repository
 	  -h, --help                          Display this help message and exit
+	  -s <0|1>, --simulate <0|1>          Simulation mode: work on a clone of the repository (default: 1)
 	  -v <0|1>, --verbose <0|1>           Verbose mode (default: 1)
 	EOUSAGE
 	}
@@ -75,6 +75,8 @@ getCliParameters() {
 				shift; gitRepoDir="${1:-}"; warnEmptyValue '-g' "$gitRepoDir"; shift ;;
 			-h | --help)
 				usage; exit 0 ;;
+			-s | --simulate)
+				shift; simulate="${1:-}"; warnEmptyValue '-s' "$simulate"; shift ;;
 			-v | --verbose)
 				shift; verbose="${1:-}"; warnEmptyValue '-v' "$verbose"; shift ;;
 			-*)
