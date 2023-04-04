@@ -77,6 +77,12 @@ warnEmptyValue() {
 
 
 getCliParameters() {
+	[ "$#" -eq 0 ] && {
+		error 'no option given'
+		usage
+		exit 1
+		}
+
 	while [ "$#" -gt 0 ]; do
 		case "$1" in
 			-g | --git-repo-dir)
