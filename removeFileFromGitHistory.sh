@@ -14,14 +14,6 @@ fileToRemoveFromGitHistory=''
 keepLatestVersion=''
 
 
-# TODO: wrong option name
-# making a backup is mandatory if we want to reset the file history (i.e. keep only the last version of the file)
-# no need to backup if we want to completely wipe 'fileToRemove' from the repository. no need to commit it back either
-backupFileToRemove=0
-#backupFileToRemove=1
-
-
-
 #tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
 tmpBaseDir='/run/shm/'				# 4GB on Arkan
 
@@ -189,7 +181,7 @@ countOccurrencesOfFileToRemove() {
 
 makeBackupOfFileToRemove() {
 	local fileToRemove=$1
-	[ "$backupFileToRemove" -eq 1 ] && cp "$fileToRemove" "$tmpBaseDir"
+	[ "$keepLatestVersion" -eq 1 ] && cp "$fileToRemove" "$tmpBaseDir"
 	}
 
 
@@ -200,7 +192,7 @@ restoreFileToRemove() {
 	# if this file was the only one in there
 	mkdir -p "$(dirname ${fileToRemove})"
 
-	[ "$backupFileToRemove" -eq 1 ] && mv "$tmpBaseDir/$(basename "$fileToRemove")" "$fileToRemove"
+	[ "$keepLatestVersion" -eq 1 ] && mv "$tmpBaseDir/$(basename "$fileToRemove")" "$fileToRemove"
 	git add "$fileToRemove"
 	git commit -m "new 'initial' version after wiping file history"
 	}
