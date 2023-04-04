@@ -51,7 +51,7 @@ info() {
 usage() {
 	cat <<-EOUSAGE
 
-	$0: Remove the specified file(s) from the Git history
+	$0: Remove files from the Git history. Files to remove must be listed in '$(basename "$0" '.sh').txt'
 
 	USAGE:
 	    $0 [OPTIONS]
