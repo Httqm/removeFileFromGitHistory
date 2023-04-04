@@ -4,19 +4,17 @@ set -u
 set -o pipefail
 
 # initial and default values of CLI parameters
-gitRepoDir='./'
 absolutePathToGitRepoRootDir=''
-verbose=1
+gitRepoDir='./'
 simulate=1
+verbose=1
+
 
 # global variables
 fileToRemoveFromGitHistory=''
 keepLatestVersion=''
-
-
-#tmpBaseDir="/run/user/$(id -u)"	# 800MB only on Arkan
-tmpBaseDir='/run/shm/'				# 4GB on Arkan
-
+output=''
+tmpBaseDir='/run/shm/'
 
 
 # list of files + parameters
@@ -37,7 +35,6 @@ tmpBaseDir='/run/shm/'				# 4GB on Arkan
 dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
 
 workDir="$absolutePathToGitRepoRootDir"
-output=''
 
 
 error() {
