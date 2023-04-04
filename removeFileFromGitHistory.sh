@@ -15,6 +15,7 @@ fileToRemoveFromGitHistory=''
 keepLatestVersion=''
 output=''
 tmpBaseDir='/run/shm/'
+workDir=''
 
 
 # list of files + parameters
@@ -34,7 +35,6 @@ tmpBaseDir='/run/shm/'
 # we 'cd' into a temporary directory and can't refer to this file with a relative path
 dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
 
-workDir="$absolutePathToGitRepoRootDir"
 
 
 error() {
@@ -111,6 +111,8 @@ getAbsoluteGitRepoDir() {
 
 	# check this is a Git repo dir
 	[ -d "$absolutePathToGitRepoRootDir/.git" ] || { error "No '$absolutePathToGitRepoRootDir/.git' directory found, '$absolutePathToGitRepoRootDir' is not the root directory of a Git repository"; exit 1; }
+
+	workDir="$absolutePathToGitRepoRootDir"
 	}
 
 
