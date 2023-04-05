@@ -1,4 +1,14 @@
-toto;1
-things/passwords/p455.kdbx;1
-#Doc/static/webArticles/Git - Présentation basique et non-exhaustive.pdf;1
-#Doc/static/webArticles/Ansible pour les initiés.pdf;1
+# format :
+#	<filename>;<keepLatestVersion>
+#	- <filename> :
+#		- path of the file to remove from Git
+#		- relative to the root of the repository "$absolutePathToGitRepoRootDir"
+#	- <keepLatestVersion> :
+#		- 0 : completely wipe <filename> from the repository
+#		- 1 : delete history of <filename> + commit its latest version back
+#			  into the repository as a "new initial version"
+#	- lines starting with '#' are comments and are ignored
+path/to/someFileToWipeEntirely;0
+path/to/otherFileToWipeToo;0
+path/to/aFileIWantToKeepTheLatestVersion;1
+#path/to/aCommentedFileThatWillBeIgnored;0

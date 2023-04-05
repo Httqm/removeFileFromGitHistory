@@ -18,17 +18,7 @@ tmpBaseDir='/run/shm/'
 workDir=''
 
 
-# list of files + parameters
-# format :
-#	<filename>;<keepLatestVersion>
-#	- <filename> :
-#		- path of the file to remove from Git
-#		- relative to the root of the repository "$absolutePathToGitRepoRootDir"
-#	- <keepLatestVersion> :
-#		- 0 : completely wipe <filename> from the repository
-#		- 1 : delete history of <filename> + commit its latest version back
-#			  into the repository as a "new initial version"
-#	- lines starting with '#' are comments and are ignored
+# list of files to remove + parameters. See format in the file header
 #
 # expected <dataFile> file name : "<nameOfThisScript>.txt"
 # Retrieving the absolute path of this file is made necessary by the "simulate" mode where
