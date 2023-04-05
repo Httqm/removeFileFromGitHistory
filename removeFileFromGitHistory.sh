@@ -230,10 +230,11 @@ displayRepoSize() {
 	sizeBefore_noUnit=$(removeUnitPrefixLetter "$sizeBefore")
 	sizeAfter_noUnit=$(removeUnitPrefixLetter "$sizeAfter")
 
+	sizeDifference=$(echo "$sizeBefore_noUnit-$sizeAfter_noUnit" | bc)
 	cat <<-EOSIZE
 	SIZE BEFORE ($message) :	$sizeBefore
 	SIZE AFTER  ($message) :	$sizeAfter
-	DIFFERENCE : $((sizeBefore_noUnit-sizeAfter_noUnit))
+	DIFFERENCE : $sizeDifference
 	EOSIZE
 	}
 
