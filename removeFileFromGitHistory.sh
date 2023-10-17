@@ -27,21 +27,25 @@ dataFile=$(dirname $(readlink -f "$0"))/$(basename "$0" '.sh')'.txt'
 
 
 
-error() {
-	echo -e "\033[1;31mERROR\033[0m: $1"
-	}
-
-
-info() {
-	echo -e "\033[1;36mINFO\033[0m: $1"
-	}
-
-
 # TODO: specify file on the CLI or list of files in .txt file
 usage() {
+	local dataFile="$(basename "$0" '.sh').txt"
 	cat <<-EOUSAGE
 
-	$0: Remove files from the Git history. Files to remove must be listed in '$(basename "$0" '.sh').txt'
+	$0: Remove files from the Git history
+	    - completely
+	    - OR keep the latest version
+
+	    The files to remove are listed in '$dataFile' :
+	    - which must be in the same directory than '$0'
+	    - see the sample '$dataFile' for information on its format
+
+	    Each listed file can be processed in 2 modes :
+	    - it's either entirely wiped from the history, as if it never existed
+	    - OR the script keeps its latest version (i.e. keep file but delete history).
+	      This is achieved by making a backup copy of the specified file
+	       + removing it from the Git history
+	       + re-committing it "back"
 
 	USAGE:
 	    $0 [OPTIONS]
@@ -52,6 +56,16 @@ usage() {
 	  -s <0|1>, --simulate <0|1>          Simulation mode: work on a clone of the repository (default: 1)
 	  -v <0|1>, --verbose <0|1>           Verbose mode (default: 1)
 	EOUSAGE
+	}
+
+
+error() {
+	echo -e "\033[1;31mERROR\033[0m: $1"
+	}
+
+
+info() {
+	echo -e "\033[1;36mINFO\033[0m: $1"
 	}
 
 
